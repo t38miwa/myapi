@@ -1,42 +1,23 @@
 package main
 
 import (
-	"fmt"
-	"io"
 	"log"
 	"net/http"
+	"github.com/gorilla/mux"
+	"github.com/t38miwa/myapi/handlers"
 )
 
 func main() {
-	helloHandler := func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "Hello, World!\n")
-	}
-	postArticleHandler := func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "Posting article...\n")
-	}
-	ArticleListHandler := func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "article List\n")
-	}
-	OneArticleHandler := func(w http.ResponseWriter, r *http.Request) {
-		articleID := 1
-		resString := fmt.Sprintf("article No.%d\n", articleID)
-		io.WriteString(w, resString)
-	}
-	ArticleNiceHandler := func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "posting Nice...\n")	
-	}
-	CommentHandler := func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "posting Comment...\n")
-	}
+	r := mux.NewRouter()
 
-	http.HandleFunc("/hello", helloHandler)
-	http.HandleFunc("/article", postArticleHandler)
-	http.HandleFunc("/article/list", ArticleListHandler)
-	http.HandleFunc("/article/1", OneArticleHandler)
-	http.HandleFunc("/article/nice", ArticleNiceHandler)
-	http.HandleFunc("/comment", CommentHandler)
+	r.HandleFunc("/hello", handlers.HelloHandler).Methods(http.MethodGet)
+	r.HandleFunc("/article", handlers.PostArticleHandler).Methods(http.MethodPost)
+	r.HandleFunc("/article/list", handlers.ArticleListHandler).Methods(http.MethodGet)
+	r.HandleFunc("/article/{id:[0-9]+}", handlers.ArticleDetailHandler).Methods(http.MethodGet)
+	r.HandleFunc("/article/nice", handlers.ArticleNiceHandler).Methods(http.MethodPost)
+	r.HandleFunc("/comment", handlers.CommentHandler).Methods(http.MethodPost)
 
 	log.Println("Listening on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", r))	
 }
 
