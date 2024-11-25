@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgres:14
+    ports:
+      - 9999:5432
+    environment:
+      - POSTGRES_DB=${DATABASE}
+      - POSTGRES_USER=${ROOTUSER}
+      - POSTGRES_PASSWORD=${ROOTPASS}
+      - TZ="Asia/Tokyo"
